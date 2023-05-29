@@ -115,7 +115,7 @@ const createSession = function (id, description) {
         headless: true,
         devtools: false, // not needed so far, we can see websocket frames and xhr responses without that.
         // Coment jika sedang jalan di local, jangan lupa di uncoment jika akan di push
-        executablePath: '/usr/bin/google-chrome',
+        // executablePath: '/usr/bin/google-chrome',
         args: [
           /* TODO : https://peter.sh/experiments/chromium-command-line-switches/
         there is still a whole bunch of stuff to disable
