@@ -15,7 +15,7 @@ const chat = require("./models/chat");
 // import the book module
 const message = require('./message');
 
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 8184;
 
 const app = express();
 app.use(express.json());
@@ -110,11 +110,12 @@ const createSession = function (id, description) {
   console.log('Session : ' + id );
   try {
     const client = new Client({
-      restartOnAuthFail: true,
+      restartOnAuthFail: false,
       puppeteer: {
         headless: true,
+        devtools: false, // not needed so far, we can see websocket frames and xhr responses without that.
         // Coment jika sedang jalan di local, jangan lupa di uncoment jika akan di push
-        // executablePath: '/usr/bin/google-chrome',
+        executablePath: '/usr/bin/google-chrome',
         args: [
           /* TODO : https://peter.sh/experiments/chromium-command-line-switches/
         there is still a whole bunch of stuff to disable
@@ -133,6 +134,9 @@ const createSession = function (id, description) {
           '--no-first-run',
           '--disable-infobars',
           '--disable-breakpad',
+          //'--ignore-gpu-blacklist',
+          '--window-size=1280,1024', // see defaultViewport
+          '--user-data-dir=./chromeData', // created in index.js, guess cache folder ends up inside too.
           '--no-sandbox', // meh but better resource comsuption
           '--disable-setuid-sandbox'// same
           // '--proxy-server=socks5://127.0.0.1:9050'] // tor if needed
@@ -277,21 +281,20 @@ io.on('connection', function (socket) {
   init(socket);
 
   socket.on('create-session', function (data) {
-    createSession(data.id, data.description);
-    // const savedSessions = getSessionsFile();
-    // const sessionIndex = savedSessions.findIndex(sess => sess.id == data.id);
-    // if (sessionIndex > -1) {
+    const savedSessions = getSessionsFile();
+    const sessionIndex = savedSessions.findIndex(sess => sess.id == data.id);
+    if (sessionIndex > -1) {
 
-    //   console.log("sessionIndex", sessionIndex);
-    //   if (savedSessions[sessionIndex].ready == false) {
-    //   console.log("savedSessions[sessionIndex].ready", savedSessions[sessionIndex].ready);
+      console.log("sessionIndex", sessionIndex);
+      if (savedSessions[sessionIndex].ready == false) {
+      console.log("savedSessions[sessionIndex].ready", savedSessions[sessionIndex].ready);
 
-    //     createSession(data.id, data.description);
-    //   }
-    // }
-    // else {
-    //   createSession(data.id, data.description);
-    // }
+        createSession(data.id, data.description);
+      }
+    }
+    else {
+      createSession(data.id, data.description);
+    }
   });
 
   socket.on('disconnect', function (data) {

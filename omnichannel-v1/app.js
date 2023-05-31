@@ -116,8 +116,6 @@ client.initialize();
 
   const name = (await msg.getContact()).pushname;
 
-  console.log("test", name);
-
   if(msg.from == 'status@broadcast')
     return;
   

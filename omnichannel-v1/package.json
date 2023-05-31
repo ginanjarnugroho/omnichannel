@@ -1,7 +1,7 @@
 {
   "main": "app-multiple-account.js",
   "scripts": {
-    "start": "nodemon app-multiple-account.js",
+    "start": "node app-multiple-account.js",
     "start:dev": "node app-multiple-account.js",
     "start:multiple-device": "PORT=3001 nodemon app-multiple-account.js",
     "test": "echo \"Error: no test specified\" && exit 1"
